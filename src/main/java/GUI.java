@@ -64,7 +64,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     /**
      * creates a button for the calc panel
      *
-     * @param DisplayedName the name to be displayed on the button
+     * @param DisplayedName       the name to be displayed on the button
      * @param defaultActiveStatus the default active status of the button
      * @return is the created button
      */
@@ -88,7 +88,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     /**
      * creates a button for the top of row of the calc panel
      *
-     * @param DisplayedName the name to be displayed on the button
+     * @param DisplayedName       the name to be displayed on the button
      * @param defaultActiveStatus the default active status of the button
      * @return is the created top button
      */
@@ -126,12 +126,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         return ret;
     }
 
-
-    private static final String[] labels = {"e", "1", "4", "7", "+", "×", "sin", "2", "5", "8", "-", "/", "cos", "3", "6", "9", "^", "%", "tan", "π", "0", ".", "√", "!", "log", "|", "(", ")", "=", ""};
-    private static final boolean[] types = {true, true, true, true, false, false, true, true, true, true, true, false, true, true, true, true, false, false, true, true, true, false, true, false, true, true, false, true, true};
-
-
-     JButton[] buttons = new JButton[]{
+    JButton[] buttons = new JButton[]{
             createButton("E", true),
             createButton("1", true),
             createButton("4", true),
@@ -348,7 +343,12 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (showCalc) manageKeyInputsForCalcPanel(e);
+
+        if (showCalc) {
+            Main.calInput = inputFieldForCalculator.getText();
+            manageKeyInputsForCalcPanel(e);
+        }
+
     }
 
     @Override
@@ -363,7 +363,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
      *
      * @param e the key event to be managed
      */
-    private void manageKeyInputsForCalcPanel(KeyEvent e){
+    private void manageKeyInputsForCalcPanel(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             manageCalcInput();
         }
@@ -384,7 +384,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     //------------------------------------------------------------------------------------------------------------------
 
-
+    /**
+     * copies the content out of the calc input field
+     *
+     * @throws RuntimeException if the content can't be copied
+     */
     private void copyOutOfCalInput() throws RuntimeException {
         String str = Main.calInput;
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -394,6 +398,12 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         Logs.writeToLog("copied content from calc input successfully");
     }
 
+    /**
+     * pastes the content into the calc input field
+     *
+     * @throws UnsupportedFlavorException if the flavor is not supported
+     * @throws IOException                if an I/O error occurs (with getTransferData)
+     */
     private void pasteIntoCalInput() throws UnsupportedFlavorException, IOException {
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable t = c.getContents(this);
@@ -402,12 +412,18 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         Logs.writeToLog("pasted content into calc input successfully");
     }
 
+    /**
+     * sets the DEG and RAD mode when the button is clicked
+     */
     private void setDEGAndRAD() {
         Main.isDEG = !Main.isDEG;
         topButtons[3].setText(Main.isDEG ? "RAD" : "DEG");
         System.out.println(Main.isDEG);
     }
 
+    /**
+     * manages the calc input and writes the result to the results log file (and shows the result in the calc input field)
+     */
     private void manageCalcInput() {
         String s = Main.calInput;
 
@@ -415,10 +431,13 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         Main.calInput = C.getValue();
         inputFieldForCalculator.setText(Main.calInput);
 
-        Logs.writeToResults(Cal.throwsError() ? Cal.getValue() : String.format("%s = %s", s, Cal.getValue()));
+        Logs.writeToResults(C.throwsError() ? C.getValue() : String.format("%s = %s", s, C.getValue()));
 
     }
 
+    /**
+     * checks if the buttons should be enabled or disabled based on the content of the calc input field
+     */
     private void checkOnButtons() {
         buttons[0].setEnabled(isAllowedEPlacement(Main.calInput));
         buttons[1].setEnabled(isAllowedNumberPlacement(Main.calInput));
@@ -581,7 +600,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     /**
      * counts instances
      *
-     * @param s the string
+     * @param s      the string
      * @param search the character to search for
      * @return the number of instances
      */

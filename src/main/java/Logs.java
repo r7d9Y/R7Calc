@@ -14,7 +14,7 @@ import java.time.LocalTime;
 
 public class Logs {
 
-    private static final String logFile = "logs/calclogs.txt";
+    private static final String logFile = "logs/calcLogs.txt";
     private static final String resultsLog = "logs/resultsLog.txt";
 
     /**

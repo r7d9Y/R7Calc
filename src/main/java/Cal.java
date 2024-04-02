@@ -15,11 +15,11 @@ public class Cal {
      */
     private static boolean isDEG;
 
-    public static boolean getIsDEG() {
+    public boolean getIsDEG() {
         return isDEG;
     }
 
-    public static void setIsDEG(boolean isDEG) {
+    public void setIsDEG(boolean isDEG) {
         Cal.isDEG = isDEG;
     }
 
@@ -28,11 +28,11 @@ public class Cal {
         value = input;
     }
 
-    public static String getValue() {
+    public String getValue() {
         return doCalculate(value);
     }
 
-    public static boolean throwsError() {
+    public boolean throwsError() {
         return Arrays.asList(listOfErrors).contains(getValue());
     }
 
