@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 public class GUI extends JFrame implements ActionListener, KeyListener {
 
     private boolean showCalc = true;
+    private boolean showResults = false;
 
     //------------------------------------------------------------------------------------------------------------------
     int[] bgC = Config.getBgColor();
@@ -177,8 +178,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     JPanel panelCalculator = new JPanel();
     JTextField inputFieldForCalculator = createInputField();
 
-
-    //----------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * creates the button panel for the calc panel
@@ -215,6 +215,86 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         return Panel;
     }
 
+    //------------------------------------------------------------------------------------------------------------------7
+
+    JPanel panelShowResults = createResultsPanel();
+    JTextArea textAreaOfPanelShowResults;
+
+    private JPanel createResultsPanel() {
+        JPanel ret = new JPanel();
+        ret.setBackground(bgColor);
+        ret.setLayout(new BorderLayout());
+        ret.setBorder(new EmptyBorder(0, 0, 0, 0));
+
+        textAreaOfPanelShowResults = new JTextArea();
+        textAreaOfPanelShowResults.setBounds(10, 10, 10, 10);
+        textAreaOfPanelShowResults.setEditable(false);
+        textAreaOfPanelShowResults.setBackground(bgColor);
+        textAreaOfPanelShowResults.setForeground(fontColor);
+        textAreaOfPanelShowResults.setFont(new Font("Calibri", Font.BOLD, 20));
+        textAreaOfPanelShowResults.setText(Logs.readResults());
+
+        JScrollPane out = new JScrollPane(textAreaOfPanelShowResults);
+        out.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        out.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        ret.add(textAreaOfPanelShowResults);
+        ret.setVisible(showResults);
+
+        return ret;
+    }
+
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    JMenuItem resetLogsOption = new JMenuItem("Reset Logs");
+    JMenuItem reloadOption = new JMenuItem("Reload the program");
+    JMenuItem closeOption = new JMenuItem("Close Program");
+    JMenuItem showCalResultsOption = new JMenuItem("Show Calculator Results");
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    private JMenuBar createMenuBar() {
+        JMenuBar ret = new JMenuBar();
+        ret.setPreferredSize(new java.awt.Dimension(this.getWidth(), 27));
+        ret.setBackground(bgColor2);
+        ret.setBounds(0, 0, this.getWidth(), 50);
+        ret.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+        ret.setVisible(true);
+
+        JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setBackground(bgColor2);
+        resetLogsOption.addActionListener(this);
+        resetLogsOption.setBackground(bgColor2);
+        resetLogsOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        reloadOption.addActionListener(this);
+        reloadOption.setBackground(bgColor2);
+        reloadOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        closeOption.addActionListener(this);
+        closeOption.setBackground(bgColor2);
+        closeOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        optionsMenu.add(resetLogsOption);
+        optionsMenu.add(reloadOption);
+        optionsMenu.add(closeOption);
+        ret.add(optionsMenu);
+
+        JMenu calculatorModesMenu = new JMenu("Calculator Modes");
+        ret.add(calculatorModesMenu);
+
+        JMenu helpMenu = new JMenu("Help");
+        ret.add(helpMenu);
+
+        JMenu showResultsMenu = new JMenu("Show history");
+        showResultsMenu.setBackground(bgColor2);
+        showCalResultsOption.addActionListener(this);
+        showCalResultsOption.setBackground(bgColor2);
+        showCalResultsOption.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
+        showResultsMenu.add(showCalResultsOption);
+        ret.add(showResultsMenu);
+
+
+        return ret;
+    }
 
     protected GUI() throws RuntimeException {
 
@@ -230,28 +310,44 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         this.setIconImage(img.getImage());
         this.getContentPane().setBackground(new Color(37, 37, 37));
 
+        this.setJMenuBar(createMenuBar());
+
         //--------------------------------------------------------------------------------------------------------------
-        Thread ThreadForCalc = getThreadForGUIUpdateForCalcPanel();
+        Thread ThreadForCalc = getThreadForGUIUpdate();
         ThreadForCalc.setDaemon(true);
         ThreadForCalc.start();
-
 
         panelCalculator.setBackground(bgColor);
         panelCalculator.setLayout(new BorderLayout());
         panelCalculator.add(topButtonsPanel, BorderLayout.NORTH);
         panelCalculator.add(buttonsPanel, BorderLayout.CENTER);
         panelCalculator.add(inputFieldForCalculator);
-        panelCalculator.setVisible(true);
-
-        if (showCalc) {
-            this.add(panelCalculator);
-        }
+        panelCalculator.setVisible(showCalc);
 
 
+        this.add(panelCalculator);
+        this.add(panelShowResults);
+
+        this.pack();
         this.setVisible(true);
         Logs.writeToLog(String.format("GUI has been loaded successfully with dimensions: %dx%d", panelCalculator.getWidth(), panelCalculator.getHeight()) + System.lineSeparator());
     }
 
+    public void closeFrame() {
+        Logs.writeToLog("Program has been closed manually");
+        this.dispose();
+    }
+
+    public void reloadFrame() {
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new GUI();
+            } catch (RuntimeException e) {
+                Logs.writeToLog("could not reload GUI -> " + e.getMessage());
+            }
+        });
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -260,7 +356,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
      *
      * @return is the thread
      */
-    private Thread getThreadForGUIUpdateForCalcPanel() {
+    private Thread getThreadForGUIUpdate() {
         Runnable updater = () -> {
             long time = System.currentTimeMillis();
             do {
@@ -272,12 +368,14 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                     for (JButton button : topButtons) {
                         button.setFont(buttonFont);
                     }
+                    Dimension panelSize = new Dimension(this.getWidth(), (int) (this.getHeight() * 0.92));
 
-                    panelCalculator.setBounds(0, (int) (this.getHeight() * 0.07), this.getWidth(), (int) (this.getHeight() * 0.9));
+                    panelCalculator.setBounds(0, 0, panelSize.width, panelSize.height);
                     topButtonsPanel.setBounds(0, 0, panelCalculator.getWidth(), (int) (panelCalculator.getHeight() * 0.06));
                     inputFieldForCalculator.setBounds(0, (int) (panelCalculator.getHeight() * 0.07), panelCalculator.getWidth(), (int) (panelCalculator.getHeight() * 0.28));
                     buttonsPanel.setBounds(0, (int) (panelCalculator.getHeight() * 0.35) - 1, panelCalculator.getWidth(), (int) (panelCalculator.getHeight() * 0.63));
 
+                    panelShowResults.setBounds(0, 0, panelSize.width, panelSize.height);
 
                 }
                 time = System.currentTimeMillis();
@@ -293,6 +391,24 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == resetLogsOption) {
+            Logs.resetLogs();
+        } else if (e.getSource() == reloadOption){
+            reloadFrame();
+        } else if (e.getSource() == closeOption){
+            closeFrame();
+
+        }else if (e.getSource() == showCalResultsOption) {
+            showCalc = !showCalc;
+            showResults = !showResults;
+            showCalResultsOption.setText(!showResults ? "Show Calculator Results" : "Hide Calculator Results");
+            Logs.writeToLog(String.format("showCalc: %b, showResults: %b", showCalc, showResults));
+            textAreaOfPanelShowResults.setText(Logs.readResults());
+            panelCalculator.setVisible(showCalc);
+            panelShowResults.setVisible(showResults);
+        }
+
         if (showCalc) {
             Main.calInput = inputFieldForCalculator.getText();
             if (contains(Main.calInput, Cal.getPossibleErrors())) {
@@ -417,8 +533,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
      */
     private void setDEGAndRAD() {
         Main.isDEG = !Main.isDEG;
-        topButtons[3].setText(Main.isDEG ? "RAD" : "DEG");
-        System.out.println(Main.isDEG);
+        topButtons[3].setText(Main.isDEG ? "DEG" : "RAD");
     }
 
     /**

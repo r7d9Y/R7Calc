@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rand7Y9Z@gmail.com
@@ -119,6 +121,53 @@ public class Logs {
         } catch (IOException e) {
             writeToLog("Log file could not be reset -> " + e.getMessage());
         }
+    }
+
+    /**
+     * reads the log file and returns its content as a list of strings
+     *
+     * @return a list of strings representing the content of the log file
+     */
+    protected static List<String> readResultsAndErrors() throws IOException{
+            return Files.readAllLines(Paths.get(resultsLog));
+    }
+
+    /**
+     * reads the results log file and returns its content as a string
+     * the method filters the content of the log file to only include lines that contain " = "
+     * each line in the log file is appended to the returned string
+     * if an IOException occurs during the reading of the log file an error message is written to the log file
+     *
+     * @return a string representing the content of the results log file
+     */
+    protected static String readResults(){
+        StringBuilder ret = new StringBuilder();
+        try {
+            String[] s = readResultsAndErrors().stream().filter(e -> e.contains(" = ")).toArray(String[]::new);
+            for (String value : s) ret.append(value).append(System.lineSeparator());
+        }catch (IOException e){
+            writeToLog("results log could not be read -> " + e.getMessage());
+        }
+        return ret.isEmpty() ? "There is no history of results to be shown" : ret.toString();
+    }
+
+    /**
+     * reads the results log file and returns its content as a string
+     * the method filters the content of the log file to exclude lines that contain " = "
+     * each line in the log file is appended to the returned string
+     * if an IOException occurs during the reading of the log file an error message is written to the log file
+     *
+     * @return a string representing the content of the results log file
+     */
+    protected static String readResultsErrors(){
+        StringBuilder ret = new StringBuilder();
+        try {
+            String[] s = readResultsAndErrors().stream().filter(e -> !e.contains(" = ")).toArray(String[]::new);
+            for (String value : s) ret.append(value).append(System.lineSeparator());
+        }catch (IOException e){
+            writeToLog("results log could not be read -> " + e.getMessage());
+        }
+        return ret.isEmpty() ? "There is no history of errors to be shown" : ret.toString();
     }
 
 

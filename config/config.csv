@@ -1,4 +1,4 @@
-update time,500,,,,in m/s
+update time,100,,,,in m/s
 default for deg/rad,1,,,,sets the default for deg/rad setting ( 1 = deg)
 background color,75,75,75,,
 background2 color,128,128,128,,
@@ -10,6 +10,6 @@ _,,,,,reserved for future use
 _,,,,,reserved for future use
 _,,,,,reserved for future use
 _,,,,,reserved for future use
-GUI Version,2.1,,,,
-Calculator Version,2.6,,,,
+GUI Version,2.2,,,,
+Calculator Version,2.7,,,,
 Program name,R7Calculator,,,,

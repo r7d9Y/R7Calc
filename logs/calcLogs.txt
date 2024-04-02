@@ -1,7 +1,2 @@
-[12:11:18] Log file has been created
-[12:11:18] Results log file has been created
-[12:11:18] file has been read in successfully [.csv]
-[12:11:18] Config file has been read in and applied successfully
-[12:11:18] R7Calculator 2.2 / 2.6 ready to start 
-[12:11:18] GUI has been loaded successfully with dimensions: 400x513
-
+[22:30:27] Log files have been cleared
+[22:30:30] Program has been closed manually
