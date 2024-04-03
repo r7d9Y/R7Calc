@@ -1,10 +1,10 @@
 update time,100,,,,in m/s
 default for deg/rad,1,,,,sets the default for deg/rad setting ( 1 = deg)
-background color,75,75,75,,
-background2 color,128,128,128,,
-background3 color,57,57,57,,
-accent color,66,99,110,,
-font color,255,255,255,,
+background color,190,190,190,,
+background2 color,250,250,250,,
+background3 color,240,240,240,,
+accent color,150,150,150,,
+font color,10,10,10,,
 height&width,550,400,,,reserved for future use
 _,,,,,reserved for future use
 _,,,,,reserved for future use

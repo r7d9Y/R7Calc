@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +13,70 @@ import java.util.List;
  */
 
 public class Config {
+    private static String configFilePath = getConfigFilePath();
 
-    protected static void manageConfig() {
+    /**
+     * sets the path to the config file
+     * @param path the path to the config file
+     */
+    protected static void setConfigFilePath(String path) {
         try {
-            readInConfigFile(readInCSV("config/config.csv"));
+            Files.delete(Path.of("config/configFilePath.txt"));
+            Files.createFile(Path.of("config/configFilePath.txt"));
+            Files.writeString(Path.of("config/configFilePath.txt"), path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            configFilePath = path;
+        } catch (IOException e) {
+            Logs.writeToLog("Couldn't set config file path -> " + e.getMessage());
+        }
+        manageConfig();
+    }
+
+    /**
+     * resets the path to the config file to the default value
+     */
+    protected static void resetConfigFilePath() {
+        try {
+            Files.writeString(Path.of("config/configFilePath.txt"), "config/config.csv", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            configFilePath = "config/config.csv";
+        } catch (IOException e) {
+            Logs.writeToLog("Couldn't reset config file path -> " + e.getMessage());
+        }
+        manageConfig();
+    }
+
+    /**
+     * gets the path to the config file from the file configFilePath.txt
+     * defaults to "config/config.csv"
+     * @return
+     */
+    protected static String getConfigFilePath() {
+        try {
+            if (!Files.exists(Path.of("config/configFilePath.txt"))) {
+                Files.writeString(Path.of("config/configFilePath.txt"), "config/config.csv", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+
+            return Files.readString(Path.of("config/configFilePath.txt"));
+        } catch (IOException e) {
+            Logs.writeToLog("Couldn't read or find config file -> " + e.getMessage());
+            return "config/config.csv";
+        }
+    }
+
+    /**
+     * manages the config file
+     * reads in the config file and applies the settings
+     * if the config file is not found or can't be read, default values are applied
+     */
+    protected static void manageConfig() {
+
+
+        try {
+            readInConfigFile(readInCSV(configFilePath));
             Logs.writeToLog("Config file has been read in and applied successfully");
             Logs.writeToLog(String.format("%s %.1f / %.1f ready to start ", Config.getName(), Config.getGUIVersion(), Config.getCalculatorVersion()));
 
         } catch (IOException e) {
-            Logs.writeToLog("Couldn't read config file- > " + e.getMessage());
+            Logs.writeToLog("Couldn't read or find config file- > " + e.getMessage());
             String[][] d = {
                     {"update time", "500"},
                     {"default for deg/rad", "1"},

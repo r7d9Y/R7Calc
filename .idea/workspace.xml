@@ -4,11 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c2408bbe-da33-4234-a114-ab8b9d2326de" name="Changes" comment="v2">
+    <list default="true" id="c2408bbe-da33-4234-a114-ab8b9d2326de" name="Changes" comment="v3">
+      <change afterPath="$PROJECT_DIR$/config/configFilePath.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/configLightMode.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.csv" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/calcLogs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/calcLogs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/resultsLog.txt" beforeDir="false" afterPath="$PROJECT_DIR$/logs/resultsLog.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Cal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Cal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Logs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logs.java" afterDir="false" />
     </list>
@@ -74,7 +78,9 @@
       <updated>1712006128190</updated>
       <workItem from="1712006129522" duration="1356000" />
       <workItem from="1712050068498" duration="13326000" />
-      <workItem from="1712071844524" duration="14295000" />
+      <workItem from="1712071844524" duration="15377000" />
+      <workItem from="1712123057026" duration="296000" />
+      <workItem from="1712138159282" duration="8746000" />
     </task>
     <task id="LOCAL-00001" summary="v2">
       <option name="closed" value="true" />
@@ -84,7 +90,23 @@
       <option name="project" value="LOCAL" />
       <updated>1712060591268</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="v3">
+      <option name="closed" value="true" />
+      <created>1712089861032</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1712089861032</updated>
+    </task>
+    <task id="LOCAL-00003" summary="v3">
+      <option name="closed" value="true" />
+      <created>1712089894102</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712089894102</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -93,6 +115,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="v2" />
-    <option name="LAST_COMMIT_MESSAGE" value="v2" />
+    <MESSAGE value="v3" />
+    <option name="LAST_COMMIT_MESSAGE" value="v3" />
   </component>
 </project>

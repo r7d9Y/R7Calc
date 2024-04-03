@@ -12,15 +12,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
 
 public class GUI extends JFrame implements ActionListener, KeyListener {
-
-    private boolean showCalc = true;
-    private boolean showResults = false;
 
     //------------------------------------------------------------------------------------------------------------------
     int[] bgC = Config.getBgColor();
@@ -127,47 +127,12 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         return ret;
     }
 
-    JButton[] buttons = new JButton[]{
-            createButton("E", true),
-            createButton("1", true),
-            createButton("4", true),
-            createButton("7", true),
-            createButton("+", false),
-            createButton("×", false),
-            createButton("sin", true),
-            createButton("2", true),
-            createButton("5", true),
-            createButton("8", true),
-            createButton("-", true),
-            createButton("/", false),
-            createButton("cos", true),
-            createButton("3", true),
-            createButton("6", true),
-            createButton("9", true),
-            createButton("^", false),
-            createButton("%", false),
-            createButton("tan", true),
-            createButton("π", true),
-            createButton("0", true),
-            createButton(".", false),
-            createButton("√", true),
-            createButton("!", false),
-            createButton("log", true),
-            createButton("|", true),
-            createButton("(", true),
-            createButton(")", false),
-            createButton("=", true),
-            createButton("", true)
+    JButton[] buttons = new JButton[]{createButton("E", true), createButton("1", true), createButton("4", true), createButton("7", true), createButton("+", false), createButton("×", false), createButton("sin", true), createButton("2", true), createButton("5", true), createButton("8", true), createButton("-", true), createButton("/", false), createButton("cos", true), createButton("3", true), createButton("6", true), createButton("9", true), createButton("^", false), createButton("%", false), createButton("tan", true), createButton("π", true), createButton("0", true), createButton(".", false), createButton("√", true), createButton("!", false), createButton("log", true), createButton("|", true), createButton("(", true), createButton(")", false), createButton("=", true), createButton("", true)
 
     };
 
     final String[] topButtonsLabels = new String[]{"Clear All", "Copy", "Paste", "DEG"};
-    JButton[] topButtons = new JButton[]{
-            createTopButton(topButtonsLabels[0], true),
-            createTopButton(topButtonsLabels[1], true),
-            createTopButton(topButtonsLabels[2], true),
-            createTopButton(topButtonsLabels[3], true)
-    };
+    JButton[] topButtons = new JButton[]{createTopButton(topButtonsLabels[0], true), createTopButton(topButtonsLabels[1], true), createTopButton(topButtonsLabels[2], true), createTopButton(topButtonsLabels[3], true)};
 
     JPanel buttonsPanel = createButtonPanel();
     JPanel topButtonsPanel = createTopButtonPanel();
@@ -239,6 +204,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         out.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         ret.add(textAreaOfPanelShowResults);
+        boolean showResults = false;
         ret.setVisible(showResults);
 
         return ret;
@@ -246,7 +212,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
 
     //------------------------------------------------------------------------------------------------------------------
-
+    JMenuItem switchDarkLightOption = new JMenuItem("Switch Dark/Light Mode");
+    JMenuItem setConfigOption = new JMenuItem("Set Config (theme)");
+    JMenuItem resetConfigOption = new JMenuItem("Reset Config (theme)");
     JMenuItem resetLogsOption = new JMenuItem("Reset Logs");
     JMenuItem reloadOption = new JMenuItem("Reload the program");
     JMenuItem closeOption = new JMenuItem("Close Program");
@@ -264,6 +232,15 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
 
         JMenu optionsMenu = new JMenu("Options");
         optionsMenu.setBackground(bgColor2);
+        switchDarkLightOption.addActionListener(this);
+        switchDarkLightOption.setBackground(bgColor2);
+        switchDarkLightOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        setConfigOption.addActionListener(this);
+        setConfigOption.setBackground(bgColor2);
+        setConfigOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        resetConfigOption.addActionListener(this);
+        resetConfigOption.setBackground(bgColor2);
+        resetConfigOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         resetLogsOption.addActionListener(this);
         resetLogsOption.setBackground(bgColor2);
         resetLogsOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
@@ -273,6 +250,9 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         closeOption.addActionListener(this);
         closeOption.setBackground(bgColor2);
         closeOption.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        optionsMenu.add(switchDarkLightOption);
+        optionsMenu.add(setConfigOption);
+        optionsMenu.add(resetConfigOption);
         optionsMenu.add(resetLogsOption);
         optionsMenu.add(reloadOption);
         optionsMenu.add(closeOption);
@@ -322,6 +302,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
         panelCalculator.add(topButtonsPanel, BorderLayout.NORTH);
         panelCalculator.add(buttonsPanel, BorderLayout.CENTER);
         panelCalculator.add(inputFieldForCalculator);
+        boolean showCalc = true;
         panelCalculator.setVisible(showCalc);
 
 
@@ -392,24 +373,61 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (e.getSource() == resetLogsOption) {
-            Logs.resetLogs();
-        } else if (e.getSource() == reloadOption){
+        if (e.getSource() == switchDarkLightOption) {
+
+            try {
+                if (new String(Files.readAllBytes(Paths.get("config/configFilePath.txt"))).contains("Light")) {
+                    Config.setConfigFilePath("config/config.csv");
+                } else {
+                    Config.setConfigFilePath("config/configLightMode.csv");
+                }
+                Config.manageConfig();
+                reloadFrame();
+                Logs.writeToLog("successfully switched dark/light mode");
+            } catch (IOException ex) {
+                Logs.writeToLog("failed to switch dark/light mode -> " + ex.getMessage());
+            }
+
+        } else if (e.getSource() == setConfigOption) {
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Choose a config file");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setCurrentDirectory(new File("."));
+            int resp = fileChooser.showOpenDialog(null);
+            if (resp == JFileChooser.APPROVE_OPTION) {
+                Config.setConfigFilePath(fileChooser.getSelectedFile().getAbsolutePath());
+                Config.manageConfig();
+                reloadFrame();
+            }
+
+        } else if (e.getSource() == resetConfigOption) {
+            Config.resetConfigFilePath();
+            Config.manageConfig();
             reloadFrame();
-        } else if (e.getSource() == closeOption){
+            Logs.writeToLog("successfully reset config file");
+        } else if (e.getSource() == resetLogsOption) {
+            Logs.resetLogs();
+        } else if (e.getSource() == reloadOption) {
+            reloadFrame();
+        } else if (e.getSource() == closeOption) {
             closeFrame();
 
-        }else if (e.getSource() == showCalResultsOption) {
-            showCalc = !showCalc;
-            showResults = !showResults;
-            showCalResultsOption.setText(!showResults ? "Show Calculator Results" : "Hide Calculator Results");
-            Logs.writeToLog(String.format("showCalc: %b, showResults: %b", showCalc, showResults));
+        } else if (e.getSource() == showCalResultsOption) {
             textAreaOfPanelShowResults.setText(Logs.readResults());
-            panelCalculator.setVisible(showCalc);
-            panelShowResults.setVisible(showResults);
+
+            if (panelCalculator.isVisible()) {
+                setAllPanelsToNotVisible();
+                panelShowResults.setVisible(true);
+            } else {
+                setAllPanelsToNotVisible();
+                panelCalculator.setVisible(true);
+            }
+
+            showCalResultsOption.setText(panelCalculator.isVisible() ? "Show Calculator History" : "Back to Calculator");
         }
 
-        if (showCalc) {
+        if (panelCalculator.isVisible()) {
             Main.calInput = inputFieldForCalculator.getText();
             if (contains(Main.calInput, Cal.getPossibleErrors())) {
                 Main.calInput = "";
@@ -446,8 +464,6 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
             inputFieldForCalculator.setText(Main.calInput);
 
             checkOnButtons();
-
-            //System.out.println(Main.calInput);
         }
 
     }
@@ -460,7 +476,7 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
 
-        if (showCalc) {
+        if (panelCalculator.isVisible()) {
             Main.calInput = inputFieldForCalculator.getText();
             manageKeyInputsForCalcPanel(e);
         }
@@ -496,6 +512,11 @@ public class GUI extends JFrame implements ActionListener, KeyListener {
                 Logs.writeToLog("failed to paste content into calc input -> " + ex.getMessage());
             }
         }
+    }
+
+    private void setAllPanelsToNotVisible() {
+        panelCalculator.setVisible(false);
+        panelShowResults.setVisible(false);
     }
 
     //------------------------------------------------------------------------------------------------------------------
